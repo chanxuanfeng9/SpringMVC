@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.UserMapper">
+	<!-- 根据ID查询用户信息 -->
+	<select id="getUserById" parameterType="int" resultMap="userMaps">
+		select u.*,r.id as rid,r.roleCode,r.roleName,r.createdBy as rcreatedBy,r.modifyBy as rmodifyBy,r.creationDate as rcreationDate,r.modifyDate as rmodifyDate from smbms_user u,smbms_role r where u.id=#{id} and u.userRole = r.id
+	</select>
+	<resultMap type="su" id="userMaps" autoMapping="true">
+		<association property="userRole" javaType="sr" autoMapping="true">
+			<id property="id" column="rid"/>
+			<result property="createdBy" column="rcreatedBy"/>
+			<result property="modifyBy" column="rmodifyBy"/>
+			<result property="creationDate" column="rcreationDate"/>
+			<result property="modifyDate" column="rmodifyDate"/>
+		</association>
+	</resultMap>
+	<!-- 查询所有用户信息 -->
+	<select id="getUserByAll" resultType="su" resultMap="userMap">
+		select u.*,r.id from smbms_user u,smbms_role r where u.userRole = r.id
+	</select>
+	<resultMap type="su" id="userMap" autoMapping="true">
+		<association property="userRole" javaType="sr" autoMapping="true">
+		</association>
+	</resultMap>
+	<!-- 增加用户信息 -->
+	<insert id="addUser" parameterType="SmbmsUser">
+		insert into smbms_user values(null,#{userCode},#{userName},#{userPassword},#{gender},
+		#{birthday},#{phone},#{address},#{userRole.id},#{createdBy},#{creationDate},#{modifyBy},#{modifyDate},#{idPicPath})
+	</insert>
+	<!-- 更新用户信息 修改为if-set-->
+	<update id="updateUser" parameterType="su">
+		update smbms_user
+		<set>
+			<if test="userCode!=null">
+				userCode=#{userCode},
+			</if>
+			<if test="userName!=null">
+				userName=#{userName},
+			</if>
+			<if test="userPassword!=null">
+				userPassword=#{userPassword},
+			</if>
+			<if test="gender!=null">
+				gender=#{gender},
+			</if>
+			<if test="birthday!=null">
+				birthday=#{birthday},
+			</if>
+			<if test="phone!=null">
+				phone=#{phone},
+			</if>
+			<if test="address!=null">
+				address=#{address},
+			</if>
+			<if test="userRole!=null and userRole.id !=null">
+				userRole=#{userRole.id},
+			</if>
+			<if test="createdBy!=null">
+				createdBy=#{createdBy},
+			</if>
+			<if test="creationDate!=null">
+				creationDate=#{creationDate},
+			</if>
+			<if test="modifyBy!=null">
+				modifyBy=#{modifyBy},
+			</if>
+			<if test="modifyDate!=null">
+				modifyDate=#{modifyDate}
+			</if>		
+		</set>
+		where id=#{id}
+	</update>
+	<!-- 删除用户 -->
+	<delete id="delUser" parameterType="int">
+		delete from smbms_user where id=#{id}
+	</delete>
+	<!-- 根据用户角色id（精确匹配）和用户名称（模糊查询）查询用户列表-->
+	<select id="getUserbyRoleIdorUserName" resultType="entity.SmbmsUser">
+		select * from smbms_user
+			<!-- <where>
+				<if test="roleId !=null">and userRole=#{roleId}</if>
+				<if test="userName !=null and userName !=''">and userName like concat('%',#{userName},'%')</if>
+			</where> -->
+			<trim prefix="where" prefixOverrides="and|or">
+				<if test="roleId !=null">and userRole=#{roleId}</if>
+				<if test="userName !=null and userName !=''">and userName like concat('%',#{userName},'%')</if>
+			</trim>
+	</select>
+	<!-- 根据给定的角色Id查询查询用户列表 -->
+	<select id="getUsersByRoleIds" resultType="entity.SmbmsUser">
+		select * from smbms_user where userRole in
+		<foreach collection="array" item="roleIds" open="(" separator="," close=")">
+			#{roleIds}
+		</foreach>	
+	</select>
+	<!-- 根据用户角色列表，获取该角色列表下用户列表信息 -->
+	<select id="getUserByRoleId" resultType="entity.SmbmsUser">
+		select * from smbms_user where userRole in
+		<foreach collection="list" item="roleList" open="(" separator="," close=")">
+			#{roleList}
+		</foreach>	
+	</select>
+	<!-- 根换给定的角色ID和性别查询用户列表 -->
+	<select id="getUsersByRoleMore" resultType="su">
+		select * from smbms_user where gender = #{gender} and userRole in
+		<foreach collection="userRole" item="ur" open="(" separator="," close=")">
+			#{ur}
+		</foreach>
+	</select>
+	<!-- 根据任何一个属性查询出用户信息 -->
+	<!-- <select id="getUsersByPropery" resultType="su">
+		select * from smbms_user
+		<where>
+			<choose>
+				<when test="userCode != null">
+					userCode=${userCode}
+				</when>
+				<when test="userName != null">
+					userName like concat('%',#{userName},'%')
+				</when>
+				<when test="userPassword != null">
+					userPassword=#{userPassword}
+				</when>
+				<when test="gender != null">
+					gender=#{gender}
+				</when>
+				<when test="birthday != null">
+					birthday=#{birthday}
+				</when>
+				<when test="phone != null">
+					phone=#{phone}
+				</when>
+				<when test="address != null">
+					address=#{address}
+				</when>
+				<when test="userRole != null and userRole.id != null">
+					userRole=#{userRole.id}
+				</when>
+				<when test="createdBy != null">
+					createdBy=#{createdBy}
+				</when>
+				<when test="creationDate != null">
+					creationDate=#{creationDate}
+				</when>
+				<when test="modifyBy != null">
+					modifyBy=#{modifyBy}
+				</when>
+				<when test="modifyDate != null">
+					modifyDate=#{modifyDate}
+				</when>
+				<otherwise>
+					id=#{id}
+				</otherwise>
+			</choose>
+		</where>
+	</select> -->
+	<!-- 根据用户名模糊查询用户信息 -->
+	<select id="getUsersByUserName" resultType="su">
+		select * from smbms_user where userName like concat('%',#{userName},'%') limit #{n},#{size}
+	</select>
+	<!-- 分页查询 -->
+	<select id="getUsersByPage" resultType="su">
+		select * from smbms_user
+		<where>
+			<if test="gender != null">
+				gender = #{gender}
+			</if>
+		</where>
+		limit #{n},#{size}
+	</select>
+</mapper>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 使用AOP ，需要先添加AOP的声明-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/mvc
+      	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+        <!-- 引入外部文件properties文件 -->
+        <context:property-placeholder location="classpath:db.properties"/>
+        <!-- 配置dbcp数据源 -->
+        <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        	<!-- <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        	<property name="url" value="jdbc:mysql://localhost:3306/smbms"></property>
+        	<property name="username" value="root"></property>
+        	<property name="password" value=""></property> -->
+        	<property name="driverClassName" value="${driverClass}"></property>
+        	<property name="url" value="${url}"></property>
+        	<property name="username" value="${user}"></property>
+        	<property name="password" value="${password}"></property>
+        	<!-- 初始化连接数 -->
+        	<property name="initialSize" value="30"></property>
+        	<!-- 最大连接数 -->
+        	<property name="maxActive" value="100"></property>
+        	<!-- 最大空闲连接数 -->
+        	<property name="maxIdle" value="30"></property>
+        	<!-- 最小空闲连接 -->
+        	<property name="minIdle" value="10"></property>
+            <!-- 等待超时时间单位毫秒 -->
+            <property name="maxWait" value="1000"></property>
+        </bean>
+        <!-- 配制会话工厂 -->
+		<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+			<property name="dataSource" ref="dataSource"/>
+			<!--mybatis-config.xml文件的位置-->
+			<property name="configLocation" value="classpath:mybatis-config.xml"/>
+			<!--sql映射文件地址（和configLocation配制二选一,这种不需要mybatis－config.xml配制文件）-->
+			<!-- <property name="mapperLocations" value="classpath:dao/*.xml"></property> -->
+		</bean>
+       <!-- 配制数据映射器 -->
+		<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+			<!-- 如果Bean id为sqlSessionFactory 则下面可省略 -->
+			<!-- 配置固定数据源属性driverCLASS,url,uer,password用下列句子 -->
+			<!-- <property name="sqlSessionFactory" ref="sessionFactory"/> -->
+			<!-- 配置不的固定数据源属性${url.user.password}用下列句子 -->
+			<!-- <property name="sqlSessionFactoryBeanName" value="sessionFactory"></property> -->
+			<property name="basePackage" value="dao"/>
+		</bean>
+       <!-- 配置事务管理器 -->
+       <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+       		<property name="dataSource" ref="dataSource"></property>
+       </bean>
+       <!-- 配置事务增强 -->
+        <!-- <tx:advice id="txAdvice" transaction-manager="transactionManager">
+       		<tx:attributes>
+       			<tx:method name="add*" propagation="REQUIRED" read-only="true"/>
+       			<tx:method name="get*"/>
+       			<tx:method name="find*"/>
+       			<tx:method name="del*" propagation="SUPPORTS"/>
+       			<tx:method name="update*" propagation="SUPPORTS"/>
+       			<tx:method name="is*"/>
+       			<tx:method name="modify*"/>
+       			<tx:method name="*"/>
+       		</tx:attributes>
+       </tx:advice> -->
+       <!-- 配置切点及织入 -->
+      <!-- <aop:config>
+       		<aop:pointcut expression="execution(public * service.*.*(..))" id="pointcut"/>
+       		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+       </aop:config> --> 
+       <!-- 使用@Transactional注解的支持，使用下面句子，可省略配置事务增强和配置切点及织入两个步骤 -->
+       <tx:annotation-driven transaction-manager="transactionManager"/>
+       <!--AOP 利用组件扫描，将切面组件纳入Spring容器。虽然可以通过编程的方式织入切面，
+		但是一般情况下，我们还是使用spring的配置自动完成创建代理织入切面的工作  -->
+		<aop:aspectj-autoproxy/>
+       <!-- 组件扫描 -->
+       <context:component-scan base-package="service,controller"></context:component-scan>
+       <!-- 处理静态资源 -->
+       <mvc:default-servlet-handler/>
+       <mvc:annotation-driven>
+       		<!--修改消息转换器的默认支持编码格式 -->
+       		<mvc:message-converters>
+       			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+       				<property name="defaultCharset" value="utf-8"></property>
+       			</bean>
+       		</mvc:message-converters>
+       </mvc:annotation-driven>
+       <!-- 配置视图解析器 -->
+       <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+       		<property name="prefix" value="/"></property>
+       		<property name="suffix" value=".jsp"></property>
+       </bean>
+      	<!-- 配置全局异常处理 -->
+       <!-- <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+       		定义默认的异常处理页面，当该异常类型被触发时使用
+       		<property name="defaultErrorView" value="error"></property>
+       		定义异常处理页面用来获取异常信息的变量名，默认为exception
+       		<property name="exceptionAttribute" value="ex"></property>
+       		定义需要处理的特殊异常，用类名或完整路径名作为key,异常处理页面名作为值
+       		<property name="exceptionMappings">
+       			<props>
+       				<prop key="java.lang.NumberFormatException">error-business</prop>
+       				<prop key="java.io.FileNotFoundException">error-parameter</prop>
+       				这里还可以继续扩展对不同异常类型的处理
+       			</props>
+       		</property>
+       </bean> -->
+       <!-- 配置MultipartResolver,用于上传文件，使用spring的CommonsMultipartResolver -->
+       <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+       		<!-- 设置上传文件的大小，单位是字节 -->
+       		<property name="maxUploadSize" value="5000000"></property>
+       		<!-- 设置请求的编码格式，必须和JSP页面中的pageEncoding的值一致才能读取 -->
+       		<property name="defaultEncoding" value="UTF-8"></property>       
+       </bean>
+</beans>

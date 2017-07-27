@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.RoleMapper">
+	<!-- CRUD SQL配置  --> 
+	<!-- 根据ID查询角色信息 -->
+	<select id="getRoleById" parameterType="int" resultMap="roleMap">
+		SELECT u.*,r.id as rid,r.roleCode,r.roleName,r.createdBy as rcreatedBy,r.modifyBy as rmodifyBy,r.creationDate as rcreationDate,r.modifyDate as rmodifyDate FROM smbms_role r,smbms_user u WHERE r.id = u.userRole AND r.id = #{id}
+	</select>
+	<resultMap type="sr" id="roleMap" autoMapping="true">
+		<id property="id" column="rid"/>
+		<result property="createdBy" column="rcreatedBy"/>
+		<result property="modifyBy" column="rmodifyBy"/>
+		<result property="creationDate" column="rcreationDate"/>
+		<result property="modifyDate" column="rmodifyDate"/>
+		<collection property="users" ofType="su" autoMapping="true"></collection>
+	</resultMap>
+</mapper>

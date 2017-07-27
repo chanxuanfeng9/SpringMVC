@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="db.properties"/>
+	<!-- 用来修改MyBatis运行时的行为方式 -->
+	<settings>  
+		 <!-- 这个配置使全局的映射器启用或禁用 缓存。 -->
+        <setting name="cacheEnabled" value="true" />  
+        <!--全局启用或禁用延迟加载。当禁用时, 所有关联对象都会即时加载。  -->
+        <setting name="lazyLoadingEnabled" value="true" />  
+		 <!-- 指定 MyBatis 如何自动映射列到字段/ 属性。
+		 PARTIAL 只会自动映射简单, 没有嵌套的结果。
+		 FULL 会自动映射任意复杂的结果(嵌套的或其他情况) -->
+        <setting name="autoMappingBehavior" value="PARTIAL" />  
+		 <!--设置超时时间, 它决定驱动等待一个数据库响应的时间 -->
+        <setting name="defaultStatementTimeout" value="25" />  
+        <!-- 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn 的类似映射。  默认false -->
+        <setting name="mapUnderscoreToCamelCase" value="false" />  
+	</settings>
+	<!-- 设置别名 -->
+	<typeAliases>
+		<typeAlias type="entity.SmbmsRole" alias="sr"/>
+		<typeAlias type="entity.SmbmsUser" alias="su"/>
+		<package name="entity"/>
+	</typeAliases>
+	<!-- 工作环境，默认是开发者模式 -->
+  	<!-- <environments default="development">
+    <environment id="development">    
+      <transactionManager type="JDBC"/>
+      配置数据源
+      <dataSource type="POOLED">
+        <property name="driver" value="${driverClass}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${user}"/>
+        <property name="password" value="${password}"/>
+      </dataSource>
+    </environment>
+  </environments> -->
+  <!-- mapping 文件路径配置  -->
+  <mappers>
+    <mapper resource="dao/UserMapper.xml"/>
+    <mapper resource="dao/RoleMapper.xml"/>
+    <mapper resource="dao/BillMapper.xml"/>
+    <mapper resource="dao/ProviderMapper.xml"/>
+  </mappers>
+</configuration>
