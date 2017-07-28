@@ -1,4 +1,5 @@
 ﻿<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core"%>
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Insert title here</title>
@@ -29,14 +30,14 @@
 					<td class="field">总额：</td>
 					<td><input name="totalPrice" id="totalPrice" class="text" value="${bill.totalPrice}"><font color="red">*</font><font color="red" id="billMoney_span"></font></td>
 				</tr>
-			   <tr>
+			   <tr>			   		
 					<td class="field">供应商：</td>
 					<td>
-						<select name="providerId" id="proId">
+						<select name="providerId.id" id="proId">
 							<c:forEach items="${providers}" var="p">								
-								<option value="${p.id }">${p.proName}</option>													
+								<option value="${p.id}">${p.proName}</option>													
 							</c:forEach>
-							</select>
+						</select>
 						<font color="red">*</font><font color="red" id="proId_span"></font>
 					</td>
 				</tr>

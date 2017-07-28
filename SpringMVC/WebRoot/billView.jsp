@@ -34,7 +34,7 @@
 				</tr>
 			   <tr>
 					<td class="field">供应商：</td>
-					<td>${bill.providerId.proName }</td>
+					<td>${bill.providerId.proName}</td>
 				</tr>
 				 <tr>
 					<td class="field">是否付款：</td>

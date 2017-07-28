@@ -18,10 +18,7 @@
 				and b.isPayment=#{isPayment}
 			</if>
 	</select>
-	<resultMap type="SmbmsBill" id="billMap" autoMapping="true">
-		<association property="providerId" javaType="entity.SmbmsProvider" autoMapping="true">
-		</association>
-	</resultMap>
+	
 	<!-- 获取全部订单信息 -->
 	<select id="getBills" resultMap="billMapS">
 		select b.*,p.proName from smbms_bill b,smbms_provider p where b.providerId=p.id limit #{n},#{size}
@@ -32,8 +29,12 @@
 	</resultMap>
 	<!-- 根据id查询商品信息 -->
 	<select id="getBillById" resultMap="billMap" parameterType="int">
-		select b.*,p.proName from smbms_bill b,smbms_provider p where b.id=#{id} and b.providerId=p.id	
+		select b.* from smbms_bill b,smbms_provider p where b.id=#{id} and b.providerId=p.id	
 	</select>
+	<resultMap type="SmbmsBill" id="billMap" autoMapping="true">
+		<association property="providerId" javaType="entity.SmbmsProvider" autoMapping="true">
+		</association>
+	</resultMap>
 	<!-- 根据id更新订单信息 -->
 	<update id="updateBill">
 		update smbms_bill
@@ -82,7 +83,7 @@
 		delete from smbms_bill where id=#{id}
 	</delete>
 	<!-- 增加订单 -->
-	<insert id="addBill" parameterType="SmbmsBill">
+	<insert id="addBill">
 		insert into smbms_bill values(null,#{billCode},#{productName},#{productDesc},#{productUnit},#{productCount},#{totalPrice},#{isPayment},#{createdBy},#{creationDate},#{modifyBy},#{modifyDate},#{providerId.id})
 	</insert>
 </mapper>

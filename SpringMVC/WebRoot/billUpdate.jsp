@@ -38,7 +38,7 @@
 			   <tr>
 					<td class="field">供应商：</td>
 					<td>						
-							<select name="provider.id" id="proId">
+							<select name="providerId.id" id="proId">
 							<c:forEach items="${providers}" var="p">								
 								<option value="${p.id}">${p.proName}</option>													
 							</c:forEach>

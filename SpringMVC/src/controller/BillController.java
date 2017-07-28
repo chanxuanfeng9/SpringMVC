@@ -38,7 +38,7 @@ public class BillController {
 		Page page=new Page();
 		Map map=new HashMap();
 		map.put("n", 0);
-		map.put("size",5);
+		map.put("size",50);
 		model.put("page", page);
 		List<SmbmsBill> bills=billService.getBills(map);
 		model.put("bills", bills);
@@ -88,15 +88,15 @@ public class BillController {
 	}
 	//跳转到增加订单页面
 	@RequestMapping(value="/addBillBy",method=RequestMethod.GET)
-	public String addBillBy(SmbmsBill bill){		
+	public String addBillBy(Map<String, Object> model){
+		List<SmbmsProvider> providers=providerService.getProviders();
+		model.put("providers", providers);
 		return "billAdd";
 	}
 	//增加订单
 	@RequestMapping(value="/addBill",method=RequestMethod.POST)
 	public String addBill(SmbmsBill bill,Map<String, Object> model){
-		int len=billService.addBill(bill);
-		List<SmbmsProvider> providers=providerService.getProviders();
-		model.put("providers", providers);
+		int len=billService.addBill(bill);		
 		model.put("len", len);
 		if(len>0){
 			return "redirect:/bill/billList";

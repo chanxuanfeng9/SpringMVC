@@ -18,24 +18,17 @@ public class SmbmsBill implements Serializable{
 	private Integer modifyBy;
 	private Date modifyDate;
 	private SmbmsProvider providerId;
-	
-	public SmbmsProvider getProvider() {
-		return providerId;
-	}
-	public void setProvider(SmbmsProvider provider) {
-		this.providerId = provider;
-	}
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getBillCodde() {
+	public String getBillCode() {
 		return billCode;
 	}
-	public void setBillCodde(String billCodde) {
-		this.billCode = billCodde;
+	public void setBillCode(String billCode) {
+		this.billCode = billCode;
 	}
 	public String getProductName() {
 		return productName;
@@ -97,6 +90,12 @@ public class SmbmsBill implements Serializable{
 	public void setModifyDate(Date modifyDate) {
 		this.modifyDate = modifyDate;
 	}
+	public SmbmsProvider getProviderId() {
+		return providerId;
+	}
+	public void setProviderId(SmbmsProvider providerId) {
+		this.providerId = providerId;
+	}
 	@Override
 	public String toString() {
 		return "SmbmsBill [id=" + id + ", billCode=" + billCode
@@ -105,7 +104,7 @@ public class SmbmsBill implements Serializable{
 				+ ", productCount=" + productCount + ", totalPrice="
 				+ totalPrice + ", isPayment=" + isPayment + ", createdBy="
 				+ createdBy + ", creationDate=" + creationDate + ", modifyBy="
-				+ modifyBy + ", modifyDate=" + modifyDate + ", providerId=" + providerId + "]";
-	}
-
+				+ modifyBy + ", modifyDate=" + modifyDate + ", providerId="
+				+ providerId + "]";
+	}		
 }

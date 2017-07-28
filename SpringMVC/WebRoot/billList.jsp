@@ -59,7 +59,7 @@
 							<td><span class="STYLE1"><a href="${pageContext.request.contextPath}/bill/findBill/${bill.id}" style="color:red" >${bill.productName}</a>
 							</span>
 							</td>
-							<td><span class="STYLE1">${bill.provider.proName}</span>
+							<td><span class="STYLE1">${bill.providerId.proName}</span>
 							</td>
 							<td><span class="STYLE1">${bill.totalPrice}</span>
 							</td>
